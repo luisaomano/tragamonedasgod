@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tragamonedas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #333;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+    }
+    .resultado {
+      text-align: center;
+      margin-bottom: 20px; /* Espacio entre el texto y los carriles */
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .tragamonedas {
+      display: flex;
+      align-items: center;
+    }
+    .carrito {
+      width: 100px;
+      height: 150px;
+      border: 2px solid #fff;
+      margin: 0 10px;
+      overflow: hidden;
+      position: relative;
+    }
+    .carrito div {
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #444;
+      border-bottom: 1px solid #fff;
+      font-size: 24px;
+    }
+    .carrito > div:nth-child(1) {
+      background-color: #666;
+    }
+    .boton {
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+    .boton:hover {
+      background-color: #218838;
+    }
+    .titulo {
+      font-size: 18px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="titulo">¡Haz clic en girar para comenzar a jugar!</div>
+
+  <div class="resultado" id="resultado">¡Haz clic en girar para empezar!</div>
+
+  <div class="tragamonedas">
+    <div class="carrito" id="carrito1">
+      <div>🍒</div>
+      <div>🍋</div>
+      <div>🍇</div>
+      <div>🍉</div>
+      <div>🍒</div>
+    </div>
+    <div class="carrito" id="carrito2">
+      <div>🍒</div>
+      <div>🍋</div>
+      <div>🍇</div>
+      <div>🍉</div>
+      <div>🍒</div>
+    </div>
+    <div class="carrito" id="carrito3">
+      <div>🍒</div>
+      <div>🍋</div>
+      <div>🍇</div>
+      <div>🍉</div>
+      <div>🍒</div>
+    </div>
+  </div>
+
+  <button class="boton" id="girarBtn">Girar</button>
+
+  <script>
+    const items = ['🍒', '🍋', '🍇', '🍉'];
+    const carrito1 = document.getElementById('carrito1');
+    const carrito2 = document.getElementById('carrito2');
+    const carrito3 = document.getElementById('carrito3');
+    const resultado = document.getElementById('resultado');
+    const girarBtn = document.getElementById('girarBtn');
+
+    // Función que obtiene un símbolo aleatorio
+    function obtenerAleatorio() {
+      return items[Math.floor(Math.random() * items.length)];
+    }
+
+    // Función que hace girar un carrito
+    function girarCarrito(carrito) {
+      const elementos = carrito.querySelectorAll('div');
+      let vueltas = 0;
+      const interval = setInterval(() => {
+        // Cambiar los símbolos aleatoriamente
+        elementos.forEach((div, i) => {
+          div.textContent = obtenerAleatorio();
+        });
+        vueltas++;
+        if (vueltas >= 20) { // El número de vueltas que queremos
+          clearInterval(interval);
+        }
+      }, 100); // Cada 100 ms cambiamos el símbolo
+    }
+
+    // Función que aumenta la probabilidad de ganar
+    function verificarResultado() {
+      const simbolos1 = carrito1.querySelectorAll('div')[0].textContent;
+      const simbolos2 = carrito2.querySelectorAll('div')[0].textContent;
+      const simbolos3 = carrito3.querySelectorAll('div')[0].textContent;
+
+      // Aumentamos la probabilidad de que ganes (70% de probabilidad)
+      const probabilidadDeGanar = Math.random() < 0.7;
+
+      if (probabilidadDeGanar && simbolos1 === simbolos2 && simbolos2 === simbolos3) {
+        return "¡Felicidades, ganaste!";
+      } else {
+        return "Lo siento, perdiste. Intenta nuevamente.";
+      }
+    }
+
+    // Función que maneja el clic del botón "Girar"
+    async function girar() {
+      resultado.textContent = "Girando...";
+
+      // Girar todos los carriles a la vez
+      await Promise.all([
+        new Promise(resolve => {
+          girarCarrito(carrito1);
+          setTimeout(resolve, 2000); // 2 segundos de giro
+        }),
+        new Promise(resolve => {
+          girarCarrito(carrito2);
+          setTimeout(resolve, 2000);
+        }),
+        new Promise(resolve => {
+          girarCarrito(carrito3);
+          setTimeout(resolve, 2000);
+        })
+      ]);
+
+      // Mostrar el resultado
+      const mensaje = verificarResultado();
+      resultado.textContent = mensaje;
+    }
+
+    girarBtn.addEventListener('click', girar);
+  </script>
+  
+</body>
+</html>
